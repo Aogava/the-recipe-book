@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import RecipeList from "../components/RecipeList";
 
 function RecipeInfoPage() {
@@ -11,34 +11,29 @@ function RecipeInfoPage() {
     ingredients: null,
     instructions: null,
   });
+  const navigate = useNavigate();
+  // Getting current meal id
   const mealID = useParams().id;
-  // console.log(currentMeal);
+  // Getting detailed info about meal from server
   const fetchMeal = async (mealID) => {
     try {
       const response = await fetch(
-        `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealID}`
+        `http://localhost:3000/get-meal?mealID=${mealID}`
       );
       const json = await response.json();
-
-      const newMealState = {
-        preview: json.meals[0].strMealThumb,
-        name: json.meals[0].strMeal,
-        country: json.meals[0].strArea,
-        category: json.meals[0].strCategory,
-        instructions: json.meals[0].strInstructions,
-        ingredients: Object.keys(json.meals[0])
-          .filter(
-            (keyName) =>
-              keyName.includes("strIngredient") && json.meals[0][keyName]
-          )
-          .map((keyName) => json.meals[0][keyName]),
-      };
-      setCurrentMeal(newMealState);
+      // If recipe doesn't exist, then redirect user to main page
+      if (response.status == 404) {
+        navigate("/");
+      }
+      // If recipe exists, then showing it
+      else {
+        setCurrentMeal(json);
+      }
     } catch (error) {
       console.error(error);
     }
   };
-
+  // Every time when mealID changes, request to server to refresh info
   useEffect(() => {
     fetchMeal(mealID);
   }, [mealID]);
@@ -46,7 +41,7 @@ function RecipeInfoPage() {
   return (
     <div className="min-h-[100vh] w-full bg-gradient-to-b from-yellow-400 to-yellow-200 font-main">
       <div className="max-w-[1920px] mx-auto px-[5%] pt-5 pb-[5%]">
-        <div className="grid grid-cols-[auto_1fr] items-center gap-2">
+        <div className="grid sm:grid-cols-[auto_1fr] items-center gap-5">
           <Link to="/" className="font-bold text-3xl hover:underline">
             Back
           </Link>

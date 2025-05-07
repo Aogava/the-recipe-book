@@ -5,6 +5,7 @@ import eraserIcon from "../assets/eraser-icon.svg";
 import exploreIcon from "../assets/explore-icon.svg";
 
 function RecipeFilters({ filters, setFilters }) {
+  // Temporary filters container to not update actual ones every input
   const [tempFilters, setTempFilters] = useState({
     ingredient: filters.ingredient || "",
     country: filters.country || "",
@@ -72,6 +73,13 @@ function RecipeFilters({ filters, setFilters }) {
         <Link
           to="/"
           className="justify-self-start xl:justify-self-end flex items-center gap-2 border-2 border-amber-700 rounded-full py-1 px-3 cursor-pointer duration-300 hover:bg-amber-600"
+          onClick={() => {
+            setFilters({
+              ingredient: null,
+              country: null,
+              category: null,
+            });
+          }}
         >
           Reset all filters
           <img src={eraserIcon} alt="" className="" />

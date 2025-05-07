@@ -8,34 +8,34 @@ function RecipeList({
   hideAdditionalDetails,
 }) {
   const [recipeList, setRecipeList] = useState([]);
+  const [noResult, setNoResult] = useState(true);
 
   // console.log(filters);
   const fetchRecipes = async (filters) => {
     let fetchString = "";
     if (!filters.ingredient && !filters.country && !filters.category) {
-      fetchString = "https://www.themealdb.com/api/json/v1/1/search.php?s=";
+      fetchString = "http://localhost:3000/get-all-recipes";
     } else {
-      fetchString = "https://www.themealdb.com/api/json/v1/1/filter.php?";
-
-      filters.ingredient &&
-        (fetchString += "i=" + filters.ingredient.replace(" ", "+"));
-      filters.country &&
-        (fetchString += "a=" + filters.country.replace(" ", "+"));
-      filters.category &&
-        (fetchString += "c=" + filters.category.replace(" ", "+"));
+      const params = {
+        ingredient: filters.ingredient || null,
+        country: filters.country || null,
+        category: filters.category || null,
+      };
+      fetchString =
+        "http://localhost:3000/get-filtered-recipes?" +
+        new URLSearchParams(params).toString();
     }
-    console.log(fetchString);
+    // console.log(fetchString);
     try {
       const response = await fetch(fetchString);
       const json = await response.json();
-      const newRecipeList = json.meals.map((meal) => ({
-        id: meal.idMeal,
-        name: meal.strMeal,
-        category: meal.strCategory || null,
-        country: meal.strArea || null,
-        preview: meal.strMealThumb,
-      }));
-      setRecipeList(newRecipeList);
+      if (response.status == 404) {
+        setNoResult(true);
+        setRecipeList([]);
+      } else {
+        setNoResult(false);
+        setRecipeList(json);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -46,10 +46,17 @@ function RecipeList({
   }, [filters]);
 
   return (
-    <div className="mt-5">
+    <div className="mt-5 relative">
       <h2 className="font-semibold text-3xl">
         {listHeading ? listHeading : "List:"}
       </h2>
+      <h3
+        className={`text-5xl text-amber-700 font-bold text-center ${
+          noResult ? null : "hidden"
+        }`}
+      >
+        No result
+      </h3>
       <div
         className={
           listOuterClasses
