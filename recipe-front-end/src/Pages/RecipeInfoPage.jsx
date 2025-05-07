@@ -7,6 +7,7 @@ function RecipeInfoPage() {
     preview: null,
     name: null,
     country: null,
+    category: null,
     ingredients: null,
     instructions: null,
   });
@@ -23,6 +24,7 @@ function RecipeInfoPage() {
         preview: json.meals[0].strMealThumb,
         name: json.meals[0].strMeal,
         country: json.meals[0].strArea,
+        category: json.meals[0].strCategory,
         instructions: json.meals[0].strInstructions,
         ingredients: Object.keys(json.meals[0])
           .filter(
@@ -83,7 +85,7 @@ function RecipeInfoPage() {
           </div>
           <aside className="col-span-full 2xl:col-span-1">
             <RecipeList
-              filters={{ country: currentMeal.country }}
+              filters={{ category: currentMeal.category }}
               listHeading={"Same category:"}
               listOuterClasses={
                 "mt-2 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-1 gap-2"

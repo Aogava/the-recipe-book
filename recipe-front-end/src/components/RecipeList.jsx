@@ -31,8 +31,8 @@ function RecipeList({
       const newRecipeList = json.meals.map((meal) => ({
         id: meal.idMeal,
         name: meal.strMeal,
-        category: meal.strCategory,
-        country: meal.strArea,
+        category: meal.strCategory || null,
+        country: meal.strArea || null,
         preview: meal.strMealThumb,
       }));
       setRecipeList(newRecipeList);
